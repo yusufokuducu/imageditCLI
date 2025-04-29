@@ -51,11 +51,13 @@ def cerceve_ekle(resim_yolu, cerceve_kalinligi=20, saydamlik=0.7, gurutu_seviyes
         # Gürültü efekti ekle (sadece eğer gürültü seviyesi > 0 ise)
         if gurutu_seviyesi > 0:
             cerceve_numpy = np.array(cerceve)
-            # Sadece RGB kanallarına gürültü ekle, alpha kanalını koru
+            # Gri tonlamalı gürültü oluştur
+            gurultu = np.random.normal(0, gurutu_seviyesi * 255, (cerceve_yukseklik, cerceve_genislik)).astype(np.int16)
+            
+            # Sadece RGB kanallarına aynı gürültüyü ekle, alpha kanalını koru
             for i in range(3):  # RGB kanalları için döngü
-                gurultu_kanal = np.random.normal(0, gurutu_seviyesi * 255, (cerceve_yukseklik, cerceve_genislik)).astype(np.int16)
                 # Mevcut değerlere ekle ve sınırla (0-255)
-                cerceve_numpy[:, :, i] = np.clip(cerceve_numpy[:, :, i].astype(np.int16) + gurultu_kanal, 0, 255).astype(np.uint8)
+                cerceve_numpy[:, :, i] = np.clip(cerceve_numpy[:, :, i].astype(np.int16) + gurultu, 0, 255).astype(np.uint8)
             
             cerceve = Image.fromarray(cerceve_numpy)
         
@@ -90,11 +92,11 @@ def main():
     # Komut satırı argümanlarını tanımla
     parser = argparse.ArgumentParser(description='Resimlere çerçeve ekleyen program.')
     parser.add_argument('resim_yolu', type=str, help='İşlenecek resmin dosya yolu')
-    parser.add_argument('--kalinlik', '-k', type=int, default=20, help='Çerçeve kalınlığı (piksel olarak, varsayılan: 20)')
+    parser.add_argument('--kalinlik', '-k', type=int, default=20, help='Çerçeve kalınlığı (piksel olarak, varsayılan: 5)')
     parser.add_argument('--saydamlik', '-s', type=float, default=0.7, help='Çerçeve saydamlığı (0.0-1.0 arası, varsayılan: 0.7)')
     parser.add_argument('--gurultu', '-g', type=float, default=0.1, help='Gürültü seviyesi (0.0-1.0 arası, varsayılan: 0.1)')
-    parser.add_argument('--renk', '-r', type=str, default='0,0,0', help='Çerçeve rengi (R,G,B formatında, varsayılan: 0,0,0)')
-    parser.add_argument('--radius', type=int, default=10, help='Köşe yuvarlaklığı (piksel olarak, varsayılan: 10)')
+    parser.add_argument('--renk', '-r', type=str, default='0,0,0', help='Çerçeve rengi (R,G,B formatında, varsayılan: 150,150,150)')
+    parser.add_argument('--radius', type=int, default=10, help='Köşe yuvarlaklığı (piksel olarak, varsayılan: 6)')
     
     # Eğer hiç argüman verilmemişse yardım göster
     if len(sys.argv) == 1:
